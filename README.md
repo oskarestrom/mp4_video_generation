@@ -3,6 +3,9 @@ While it is easy to save images in python into png or tiff, it is more difficult
 
 ## Generation of a mp4 movie
 
+### Input video:
+![Alt Text](videos/input_converted.gif)
+
 ```python
 import mp4_video_generation.tiff_image_manipulation as ti
 import mp4_video_generation.video_handling as vid
@@ -42,6 +45,9 @@ settings = {
 }
 vid.save_as_mp4(img, settings)
 ```
+
+### Output video:
+![Alt Text](videos/output_converted.gif)
 
 ## Extensive settings list
 It is possible to modify the output movie in numerable ways. The settings dictionary below show all the possible options. See below for comments on each option.
