@@ -20,9 +20,9 @@ frame_range = [0,0] # if set to [0,0], all available frames will be used
 
 settings = {
     # Basic settings
-    'file_path_save' : 'C:\Users\os4875st\Dropbox\PhD Tegenfeldt\.py\waves projects_shared\mp4_video_generation\output_frame_rate.mp4', #path to save the video
-    'frame_rate': 5, #frame rate of the video
-    'playback_rate':3, #playback rate of the video. If set to -1, the playback rate will be the same as the frame rate 
+    'file_path_save' : r'C:\Users\os4875st\Dropbox\PhD Tegenfeldt\.py\waves projects_shared\mp4_video_generation\output_title.mp4', #path to save the video
+    'frame_rate': 30.8, #frame rate of the video
+    'playback_rate':5, #playback rate of the video. If set to -1, the playback rate will be the same as the frame rate 
     'frame_range':frame_range, #frame range for the video, if set to [0,0], all available frames will be used
     # Video Quality
     'crf':10, #crf used to save the video
@@ -42,6 +42,16 @@ settings = {
     #Timestamp
     'add_timestamp':True, #add timestamp to the video
     'nbr_of_decimals_for_timestamp':1, #number of decimals for the timestamp
+
+    'd_title_text_box':{
+        'h_box':50, #height of the black box
+        'w_box':100, #width of the black box        
+        'box_color':'black', #color of the box
+        'padding_h':0, #horizontal padding of the text to the box
+        'text':r'Single T4-DNA strands', #text to add to the video
+        'text_color':'white', #color of the text
+        'font_size':19, #font size of the text
+    }, #dictionary of title text box to add to the video
 
 }
 vid.save_as_mp4(img, settings)
