@@ -49,7 +49,7 @@ def add_title_text_box(img, d):
             padding_h = 10 
 
         if 'text' in d:
-            text = d['text']
+            text = d['padding_h']
         else:
             text = 'text'
 
@@ -369,26 +369,26 @@ def add_timestamp_to_vid(img, settings, extra_text_y_pos):
 
 def add_extra_text_fun(img, d_extra_text):
 
-    if 'text_in_black_box_below' in d_extra_text:
-        if d_extra_text['text_in_black_box_below'] == True:             
+    if 'text_in_box_below' in d_extra_text:
+        if d_extra_text['text_in_box_below'] == True:             
             if 'box_color' in d_extra_text:
                 box_color = d_extra_text['box_color']
             else:
                 box_color = 'black'
-            if 'h_black_box' in d_extra_text:
-                h_black_box = d_extra_text['h_black_box']
+            if 'h_box' in d_extra_text:
+                h_box = d_extra_text['h_box']
             else:
-                h_black_box = 60
-            print(f'Inserting black box of height {h_black_box}')
+                h_box = 60
+            print(f'Inserting black box of height {h_box}')
             if len(img.shape) == 3: #Grayscale image
                 n,h,w = img.shape                    
-                img2 = np.zeros([n,h+h_black_box,w],dtype=img.dtype)
+                img2 = np.zeros([n,h+h_box,w],dtype=img.dtype)
                 if box_color == 'white':
                     img2 = img2 + 255
                 img2[:,0:h,:] = img
             elif len(img.shape) == 4: #Color image
                 n,h,w,n_colors = img.shape
-                img2 = np.zeros([n,h+h_black_box,w, n_colors],dtype=img.dtype)
+                img2 = np.zeros([n,h+h_box,w, n_colors],dtype=img.dtype)
                 if box_color == 'white':
                     img2 = img2 + 255
                 img2[:,0:h,:,:] = img   
@@ -396,7 +396,7 @@ def add_extra_text_fun(img, d_extra_text):
 
             #Updated values
             h = img.shape[1]
-            extra_text_y_pos = int(h - h_black_box)
+            extra_text_y_pos = int(h - h_box)
             
     if 'font_size' in d_extra_text:
         font_size = d_extra_text['font_size']
