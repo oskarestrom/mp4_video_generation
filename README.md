@@ -59,9 +59,12 @@ settings = {}
 You might have recorded your videos at a high frame rate. However, you want to play the video much slower than real-time. Then you could adjust the playback rate:
 ```python
     'frame_rate': 30.82, #frame rate of the video
-    'playback_rate':3, #playback rate of the video. If set to -1, the playback rate will be the same as the frame rate 
+    'playback_rate':5, #playback rate of the video. If set to -1, the playback rate will be the same as the frame rate 
 ```
 Make sure to also set the correct frame rate that the video was recorded with. It is stored in the metadata of the video.
+
+<img src="videos/output_frame_rate.gif" width="400">
+Notice that the video is slowed down by lowering the playback_rate from 30.8 to 5.
 
 ### Modifying the text
 Depending on what options you set, there will be various texts in the video. Make sure to set a text color which leads to great contrast, i.e. black text on a bright background or white text on a darker background. As the dimensions (x and y) of the videos might differ, you might have to change the font size accordingly so that it is easy to read the text. Also, if the text is positioned at a bad location, change the x coordinated using 'text_x_pos':
@@ -173,7 +176,7 @@ We can manipulate the quality and thus the size of the output video. Sometimes y
 
 - Frame rate. We can remove frames if the video was recorded with an excessive frame rate.
 ```python
-    'remove_frames_to_achieve_frame_rate':-1, #remove frames to achieve the desired frame rate. If set to -1, no frames will be removed
+    'remove_frames_to_achieve_frame_rate':20, #Set the final frame rate, remove frames to achieve the desired frame rate. If set to -1, no frames will be removed
 ```
 - crf (int, optional): [Constant rate factor (CRF) which sets the quality of the output video. The range of the CRF scale is 0–51, where 0 is lossless, 23 is the default, and 51 is worst quality possible.]. Defaults to 10.
 ```python
