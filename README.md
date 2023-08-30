@@ -47,7 +47,8 @@ vid.save_as_mp4(img, settings)
 ```
 
 ### Output video:
-![Alt Text](videos/output_converted.gif){ width=25% }
+
+<img src="videos/output_converted.gif" width="200">
 
 ## Extensive settings list
 It is possible to modify the output movie in numerable ways. The settings dictionary below show all the possible options. See below for comments on each option.
