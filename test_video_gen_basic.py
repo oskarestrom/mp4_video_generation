@@ -11,7 +11,7 @@ importlib.reload(fun_misc)
 importlib.reload(ff)
 importlib.reload(image_manipulation)
 
-file_path = r'C:\Users\os4875st\Dropbox\PhD Tegenfeldt\.py\waves projects_shared\mp4_video_generation\mp4_video_generation\example_video\DNA_moving.tif'
+file_path = r'C:\Users\os4875st\Dropbox\PhD Tegenfeldt\.py\waves projects_shared\mp4_video_generation\DNA_moving.tif'
 # Org path : E:\DNADLD_2022\T4_2022-06-15_2,3nguL\5mbar\100x_5mbar_out_013.nd2
 #Read tif file
 img = ti.read_tif_file(file_path, frame_range=[0,0], print_read=True)
@@ -20,8 +20,8 @@ frame_range = [0,0] # if set to [0,0], all available frames will be used
 
 settings = {
     # Basic settings
-    'file_path_save' : 'example_video\DNA_moving_output.mp4', #path to save the video
-    'frame_rate': 30.82, #frame rate of the video
+    'file_path_save' : 'C:\Users\os4875st\Dropbox\PhD Tegenfeldt\.py\waves projects_shared\mp4_video_generation\output_frame_rate.mp4', #path to save the video
+    'frame_rate': 5, #frame rate of the video
     'playback_rate':3, #playback rate of the video. If set to -1, the playback rate will be the same as the frame rate 
     'frame_range':frame_range, #frame range for the video, if set to [0,0], all available frames will be used
     # Video Quality
