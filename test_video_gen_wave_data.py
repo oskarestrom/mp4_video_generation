@@ -67,7 +67,11 @@ settings = {
 
     #Timestamp
     'add_timestamp':True, #add timestamp to the video
-    'd_timestamp':{}, #dictionary of timestamp to add to the video
+    'd_timestamp':{
+        'pad_timestamp_y':10, #y padding of the timestamp to the image border
+        'font_size':19, #font size of the timestamp
+        'text_y_pos':0, #y position of the timestamp
+    }, #dictionary of timestamp to add to the video
     'nbr_of_decimals_for_timestamp':1, #number of decimals for the timestamp
 
     #Pressure text
@@ -77,10 +81,24 @@ settings = {
     #     't_pix':np.array([0,1,2,3,4,5,6,7,8,9,10]), #time vector
     # }, 
     #Extra text e.g. a title
-    'd_extra_text':{}, #dictionary of extra text to add to the video
+    'd_extra_text':{
+        'h_box':50, #height of the black box
+        'box_color':'black', #color of the box
+        'text_in_box_below':False, #is the text in the box below or above the box?
+        'font_size':19, #font size of the text
+
+    }, #dictionary of extra text to add to the video
     'extra_text':'', #extra text to add to the video
     'extra_text_y_pos':0, #y position of the extra text
-    'd_title_text_box':{}, #dictionary of title text box to add to the video
+    'd_title_text_box':{
+        'h_box':50, #height of the black box
+        'w_box':100, #width of the black box        
+        'box_color':'black', #color of the box
+        'padding_h':0, #horizontal padding of the text to the box
+        'text':r'$\Delta$P = 5 mbar', #text to add to the video
+        'text_color':'white', #color of the text
+        'font_size':19, #font size of the text
+    }, #dictionary of title text box to add to the video
     'd_arrow':{ #dictionary of arrows to add to the video (see video for symmetry)
         'x':10, #x position of the arrow
         'p_video':200, #pressure value of the video in mbar

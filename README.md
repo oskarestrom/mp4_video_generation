@@ -46,40 +46,28 @@ vid.save_as_mp4(img, settings)
 ## Extensive settings list
 It is possible to modify the output movie in numerable ways. The settings dictionary below show all the possible options. See below for comments on each option.
 ```python
-settings = {
-    # Basic settings
-    'file_path_save' : 'example_video\DNA_moving_output.mp4', #path to save the video
+settings = {}
+```
+
+### Modifying the playback rate
+You might have recorded your videos at a high frame rate. However, you want to play the video much slower than real-time. Then you could adjust the playback rate:
+```python
     'frame_rate': 30.82, #frame rate of the video
     'playback_rate':3, #playback rate of the video. If set to -1, the playback rate will be the same as the frame rate 
-    #'codex':'libx264', #codex used to save the video
-    
-    # Video Quality
-    'crf':10, #crf used to save the video
-    'preset':'slow', #preset used to save the video
+```
+Make sure to also set the correct frame rate that the video was recorded with. It is stored in the metadata of the video.
 
-    # Video settings
-    'RGB_video':False, #is the video in color or not?
-
-    # Contrast settings
-    'enhance_contrast':True, #enhance contrast of the video
-    'd_contrast':{ #dictionary of contrast settings. Choose basing the contrast settings between percentiles and pixel values
-        'set_contrast_based_on_percentiles':True, #set contrast based on percentiles
-        'p':np.array([0.1,99.9]), #percentiles used to set the contrast
-        'set_contrast_based_on_pixel_values':False, #set contrast based on pixel values
-        'lims':np.array([40,200]), #pixel values used to set the contrast
-    }, #dictionary of contrast settings
-
-    # General text settings
+### Modifying the text
+Depending on what options you set, there will be various texts in the video. Make sure to set a text color which leads to great contrast, i.e. black text on a bright background or white text on a darker background. As the dimensions (x and y) of the videos might differ, you might have to change the font size accordingly so that it is easy to read the text. Also, if the text is positioned at a bad location, change the x coordinated using 'text_x_pos':
+```python
     'text_color':'white', #color of the text
     'font_size':19, #font size of the text
     'text_x_pos':80, #x position of the text
+```
 
-    # Video editing
-    'remove_frames_to_achieve_frame_rate':-1, #remove frames to achieve the desired frame rate. If set to -1, no frames will be removed
-    'mirror_image_after_rotation':False, #mirror image after rotation
-    'enlarge_image':False, #enlarge image
-    'final_size_2D':(), #final size of the image in 2D
-
+### Adding a scale bar
+It is fully possible and recommendable to add a scale bar to your video. Set 'add_scale_bar' to True. It is important to specify the magnification the video was acquired with as well as the camera pixel width. Without these, the scale will be incorrect. To customize the padding of the scale bar to the video border, to the text, the fontsize of the text, specify this in the dictionary 'd_scalebar' as shown below:
+```python
     #Scale bar
     'add_scale_bar':True, #add scale bar to the video
     'd_scalebar':{ #dictionary of scale bar to add to the video
@@ -92,46 +80,96 @@ settings = {
     }, 
     'mag':'100x', #magnification of the microscope used to acquire the video
     'camera_pixel_width':16, #camera pixel width in microns
-
+```
+### Adding a timestamp
+To give the viewer a sense of the passing time of the contents of the video, you can add a timestamp. By default, this timestamp is placed in the upper left corner of the video. If the video is in slow-motion, make sure to increase the number of decimals with the setting 'nbr_of_decimals_for_timestamp'.
+```python
     #Timestamp
     'add_timestamp':True, #add timestamp to the video
-    'd_timestamp':{}, #dictionary of timestamp to add to the video
+    'd_timestamp':{
+        'pad_timestamp_y':10, #y padding of the timestamp to the image border
+        'font_size':19, #font size of the timestamp
+        'text_y_pos':0, #y position of the timestamp
+    }, #dictionary of timestamp to add to the video
     'nbr_of_decimals_for_timestamp':1, #number of decimals for the timestamp
-
+```
+### Adding a title
+Sometimes, it can be great to add a title or other text to highlight features in the video. It can also be useful to add a background box (e.g. in black) to surround the title so it becomes more visible.
+```python
+    'd_title_text_box':{
+        'h_box':50, #height of the black box
+        'w_box':100, #width of the black box        
+        'box_color':'black', #color of the box
+        'padding_h':0, #horizontal padding of the text to the box
+        'text':r'$\Delta$P = 5 mbar', #text to add to the video
+        'text_color':'white', #color of the text
+        'font_size':19, #font size of the text
+    }, #dictionary of title text box to add to the video
+```
+### Adding varying pressure value text
+If one is performing an experiment with a pressure control system and the pressure varies over time, it can be useful to present the given pressure for each timestamp. For this, you need to have a numpy array with pressures that correspond to a numpy array with the frame numbers. To achieve this, you need to know the timestamp of the first frame to couple it with the timestamp of the pressures values.
+```python
     #Pressure text
     'add_pressure_vector':False, #add pressure vector to the video
     'dic_p':{ #dictionary of pressure values
         'p':np.array([0,1,2,3,4,5,6,7,8,9,10]), #pressure vector
         't_pix':np.array([0,1,2,3,4,5,6,7,8,9,10]), #time vector
     }, 
-    #Extra text e.g. a title
-    'd_extra_text':{}, #dictionary of extra text to add to the video
+```
+
+
+### Putting text and other information in a separate area
+```python
     'extra_text':'', #extra text to add to the video
     'extra_text_y_pos':0, #y position of the extra text
-    'd_title_text_box':{}, #dictionary of title text box to add to the video
-    'd_arrow':{ #dictionary of arrows to add to the video (see video for symmetry)
-        'x':10, #x position of the arrow
-        'p_video':200, #pressure value of the video in mbar
-        'fontsize':19, #font size of the arrow text
-    }, #dictionary of arrows to add to the video
+    'd_extra_text':{
+        'h_box':50, #height of the black box
+        'box_color':'black', #color of the box
+        'text_in_box_below':False, #is the text in the box below or above the box?
+        'font_size':19, #font size of the text
+    }, #dictionary of extra text to add to the video
 
-    #Miscellaneous
-    'return_img':False, #return the image instead of saving it
 
-}
 ```
+
+### Modifying the contrast and brightness
+Because the default brightness and contrast settings might be sub-optimal, you can change them. Either using hard pixel value limits (lims, 2 values). Everything below the first value will be black and everything above the second value will be white. Linear scaling in-between. For this you need to know the pixel value limits. An easier way is to use the lower and upper percintiles of all pixel values of each video. With the percentiles, a decent brightness and contrast setting is faster obtained. However, to compare videos quantatively, you need to set the same brightness and contrast using the hard pixel value limits.
+
+```python
+    # Contrast settings
+    'enhance_contrast':True, #enhance contrast of the video
+    'd_contrast':{ #dictionary of contrast settings. Choose basing the contrast settings between percentiles and pixel values
+        'set_contrast_based_on_percentiles':True, #set contrast based on percentiles
+        'p':np.array([5,95]), #percentiles used to set the contrast
+        'set_contrast_based_on_pixel_values':False, #set contrast based on pixel values
+        'lims':np.array([40,200]), #pixel values used to set the contrast
+    }, #dictionary of contrast settings
+```
+
 ### RGB (color) video
 It is possible to use this script for color videos. Just set the 'RGB_video' to True.
 ```python
     # Video settings
     'RGB_video':False, #is the video in color or not?
 ```
-## A note on the video settings
+
+    'enlarge_image':False, #enlarge image
+    'final_size_2D':(), #final size of the image in 2D
+
+
+## A note on the video quality and file size
 We can manipulate the quality and thus the size of the output video. Sometimes you want ultra-high resolution and can bear large videos. Other times you need to compress the video as much as possible while still maintaining a decent quality. We can play with the following parameters:
 
 - Resolution (imge dimensions in x and y). Try to minimize as much as possible by cropping the video.
+
 - Frame rate. We can remove frames if the video was recorded with an excessive frame rate.
+```python
+    'remove_frames_to_achieve_frame_rate':-1, #remove frames to achieve the desired frame rate. If set to -1, no frames will be removed
+```
 - crf (int, optional): [Constant rate factor (CRF) which sets the quality of the output video. The range of the CRF scale is 0–51, where 0 is lossless, 23 is the default, and 51 is worst quality possible.]. Defaults to 10.
+```python
+    'crf':10, #Constant rate factor (CRF) used to save the video
+```
 - preset  (str, optional): Speed to compression ratio. the slower the better compression, in princple, default is slow. Options:
     - ultrafast
     - superfast
@@ -142,8 +180,12 @@ We can manipulate the quality and thus the size of the output video. Sometimes y
     - slow
     - slower
     - veryslow 
+```python
+    'preset':'slow', #preset used to save the video
+```
 - codex (str, optional): [Codex for writing the video]. Defaults to 'libx264'. For lower quality output (and very small videos), select DIVX or mpeg4. I have always used libx264 as I received errors for other codices. However, this is something one can play with.]
-- pix_fmt (str, optional): [Pixel format. yuv420p for the highest compatibility, alternatively yuv444p]. Defaults to 'yuv420p'. Similar to codex, I do not change this, I keep to 'yuv420p']
-
+```python
+    'codex':'libx264', #codex used to save the video
+```
 Note that crf has to be above 10 and preset has to be slow or faster in order to play the video in powerpoint.
 other options see [https://trac.ffmpeg.org/wiki/Encode/H.264](https://trac.ffmpeg.org/wiki/Encode/H.264)
