@@ -47,7 +47,7 @@ vid.save_as_mp4(img, settings)
 ```
 
 ### Output video:
-![Alt Text](videos/output_converted.gif)
+![Alt Text](videos/output_converted.gif){ width=25% }
 
 ## Extensive settings list
 It is possible to modify the output movie in numerable ways. The settings dictionary below show all the possible options. See below for comments on each option.
@@ -159,9 +159,12 @@ It is possible to use this script for color videos. Just set the 'RGB_video' to 
     'RGB_video':False, #is the video in color or not?
 ```
 
+### Enlarging the video (if small)
+If the ROI is very small, the video dimensions can be increased. Set 'enlarge_image' to True and specify the final dimensions in pixel values.
+```python
     'enlarge_image':False, #enlarge image
-    'final_size_2D':(), #final size of the image in 2D
-
+    'final_size_2D':(500,500), #final size of the image in 2D
+```
 
 ## A note on the video quality and file size
 We can manipulate the quality and thus the size of the output video. Sometimes you want ultra-high resolution and can bear large videos. Other times you need to compress the video as much as possible while still maintaining a decent quality. We can play with the following parameters:
