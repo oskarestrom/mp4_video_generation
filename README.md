@@ -249,6 +249,7 @@ vid.concatenate_img_stacks_from_np_arrays(list_settings,
                                                       **kwargs)
 ```
 <img src="videos/output_concat_time.gif" width="150">
+
 ## A note on the video quality and file size
 We can manipulate the quality and thus the size of the output video. Sometimes you want ultra-high resolution and can bear large videos. Other times you need to compress the video as much as possible while still maintaining a decent quality. We can play with the following parameters:
 
