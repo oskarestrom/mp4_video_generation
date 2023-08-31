@@ -77,7 +77,7 @@ You might have recorded your videos at a high frame rate. However, you want to p
 Make sure to also set the correct frame rate that the video was recorded with. It is stored in the metadata of the video.
 
 <img src="videos/output_playbackrate.gif" width="150">
-Notice that the video is sped up by increasing the playback_rate from 30.8 to 90 fps.
+Notice that the video is slowed down by increasing the playback_rate from 30.8 to 90 fps.
 
 ### Modifying the text
 Depending on what options you set, there will be various texts in the video. Make sure to set a text color which leads to great contrast, i.e. black text on a bright background or white text on a darker background. As the dimensions (x and y) of the videos might differ, you might have to change the font size accordingly so that it is easy to read the text. Also, if the text is positioned at a bad location, change the x coordinated using 'text_x_pos':
