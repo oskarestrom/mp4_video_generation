@@ -7,10 +7,6 @@ exclude = [
   "videos/*.gif",
 ]
 
-[tool.hatch.build.targets.wheel]
-only-include = ["mp4_video_generation"]
-
-
 [project]
 name = "mp4_video_generation"
 version = "0.0.7"

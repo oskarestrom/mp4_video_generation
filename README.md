@@ -15,7 +15,7 @@ You need to install the following libraries to run this package:
 ### Install this package
 Find this package on [test.pypi.org](https://test.pypi.org/project/mp4-video-generation)
 ```shell
-pip install -i https://test.pypi.org/simple/ mp4-video-generation==0.0.1
+pip install -i https://test.pypi.org/simple/ mp4-video-generation
 ```
 ## Generation of a mp4 movie
 
