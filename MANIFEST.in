@@ -1,0 +1,10 @@
+global-exclude *.gif
+exclude videos/output.gif
+exclude videos/output_color.gif
+exclude videos/output_concat_time.gif
+exclude videos/output_contrast.gif
+exclude videos/output_playbackrate.gif
+exclude videos/output_pressure.gif
+exclude videos/output_text.gif
+exclude videos/output_title.gif
+exclude videos/input_converted.gif
