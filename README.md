@@ -60,7 +60,7 @@ vid.save_as_mp4(img, settings)
 ```
 
 ### Output video:
-<img src="videos/output.gif" width="400">
+<img src="videos/output.gif" width="100">
 
 ## Extensive settings list
 It is possible to modify the output movie in numerable ways. The settings dictionary below show all the possible options. See below for comments on each option.
@@ -118,50 +118,51 @@ To give the viewer a sense of the passing time of the contents of the video, you
 ### Adding a title
 Sometimes, it can be great to add a title or other text to highlight features in the video. It can also be useful to add a background box (e.g. in black) to surround the title so it becomes more visible.
 ```python
-    'd_title_text_box':{
-        'h_box':50, #height of the black box
-        'w_box':100, #width of the black box        
+    'd_title_text_box':{ #dictionary of title text box to add to the video
+        'h_box':40, #height of the black box
+        'w_box':'full', #width of the black box        
         'box_color':'black', #color of the box
         'padding_h':0, #horizontal padding of the text to the box
-        'text':r'$\Delta$P = 5 mbar', #text to add to the video
+        'text':r'Single T4-DNA strands', #text to add to the video
         'text_color':'white', #color of the text
         'font_size':19, #font size of the text
-    }, #dictionary of title text box to add to the video
+        'text_y_pos ':100, #y position of the text
+    }, 
 ```
 <img src="videos/output_title.gif" width="400">
 
 ### Adding descriptional text
-Sometimes, it can be great to add a title or other text to highlight features in the video. It can also be useful to add a background box (e.g. in black) to surround the title so it becomes more visible.
+To make it easier to understand what is going on in the video, you can add text. It can be for example, experiment parameters such as sample information,  pressure levels and magnification used. To not remove overshade the video, there is an option to increase the dimensions by adding a "black box" at the bottom of the video (set 'text_in_box_below' to True). 
 ```python
-
+     #Extra text
+    'd_extra_text':{ #dictionary of extra text to add to the video
+        'text':'50 mbar, T4 DNA', #text to add to the video
+        'text_x_pos':10, #x position of the text
+        'h_box':70, #height of the black box
+        'box_color':'black', #color of the box
+        'text_in_box_below':False, #is the text in the box below or above the box?
+        'font_size':19, #font size of the text
+        'text_in_box_below':True,
+    }, 
 ```
-<img src="videos/output_title.gif" width="400">
+<img src="videos/output_text.gif" width="400">
 
 ### Adding varying pressure value text
 If one is performing an experiment with a pressure control system and the pressure varies over time, it can be useful to present the given pressure for each timestamp. For this, you need to have a numpy array with pressures that correspond to a numpy array with the frame numbers. To achieve this, you need to know the timestamp of the first frame to couple it with the timestamp of the pressures values.
 ```python
     #Pressure text
     'add_pressure_vector':False, #add pressure vector to the video
-    'dic_p':{ #dictionary of pressure values
-        'p':np.array([0,1,2,3,4,5,6,7,8,9,10]), #pressure vector
-        't_pix':np.array([0,1,2,3,4,5,6,7,8,9,10]), #time vector
+    #Pressure text
+    'd_pressure':{ #dictionary of pressure values
+        'p':np.arange(0,img.shape[0])*10, #pressure vector
+        't_pix':np.arange(0,img.shape[0]), #time vector
+        'text_x_pos':10, #x position of the text
+        'text_y_pos':65, #y position of the text
+        'font_size':19, #font size of the text
     }, 
 ```
+<img src="videos/output_pressure.gif" width="400">
 
-
-### Putting text and other information in a separate area
-```python
-    'extra_text':'', #extra text to add to the video
-    'extra_text_y_pos':0, #y position of the extra text
-    'd_extra_text':{
-        'h_box':50, #height of the black box
-        'box_color':'black', #color of the box
-        'text_in_box_below':False, #is the text in the box below or above the box?
-        'font_size':19, #font size of the text
-    }, #dictionary of extra text to add to the video
-
-
-```
 
 ### Modifying the contrast and brightness
 Because the default brightness and contrast settings might be sub-optimal, you can change them. Either using hard pixel value limits (lims, 2 values). Everything below the first value will be black and everything above the second value will be white. Linear scaling in-between. For this you need to know the pixel value limits. An easier way is to use the lower and upper percintiles of all pixel values of each video. With the percentiles, a decent brightness and contrast setting is faster obtained. However, to compare videos quantatively, you need to set the same brightness and contrast using the hard pixel value limits.
@@ -183,6 +184,7 @@ It is possible to use this script for color videos. Just set the 'RGB_video' to 
     # Video settings
     'RGB_video':False, #is the video in color or not?
 ```
+<img src="videos/output_color.gif" width="400">
 
 ### Enlarging the video (if small)
 If the ROI is very small, the video dimensions can be increased. Set 'enlarge_image' to True and specify the final dimensions in pixel values.
