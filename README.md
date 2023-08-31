@@ -182,6 +182,7 @@ Because the default brightness and contrast settings might be sub-optimal, you c
 
 ### RGB (color) video
 This script will also work with color videos (8-bit RGB).
+
 <img src="videos/output_color.gif" width="150">
 
 ### Enlarging the video (if small)
@@ -223,7 +224,7 @@ vid.concatenate_img_stacks_from_np_arrays(list_settings,
                                                       list_imgs, 
                                                       **kwargs)
 ```
-<img src="videos/output_concat.gif" width="150">
+<img src="videos/output_concat.gif" width="300">
 
 ```python
 list_settings = [settings1, settings2]
