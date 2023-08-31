@@ -724,28 +724,26 @@ def remove_frames(img, frame_rate_vid, frame_rate_final):
         img = img[frames,:,:]
     return img
 
-def concatenate_img_stacks_from_np_arrays(list_v, img_stack, 
+def concatenate_img_stacks_from_np_arrays(list_settings, 
+                                        list_imgs, 
                                         codex='libx264', 
                                         playback_rate=-1, 
-                                        settings_general={}, 
                                         crf=10, 
                                         preset='slow', 
                                         merge_horizontally=False, 
                                         merge_vertically=False, 
-                                        file_name_label='vid_concat.mp4', 
-                                        dir_save = '', 
+                                        file_path_save = 'unlabeled.mp4',
                                         play_back_rates=[], 
                                         return_img=False,
                                         resize=(),
                                         frame_rate_final=-1,
                                         ):
 
-    v = list_v[0]
 
     if len(play_back_rates) > 0:
-        img_stack = img_stack.copy()
-        img1 = img_stack[0]
-        img2 = img_stack[1]
+        list_imgs = list_imgs.copy()
+        img1 = list_imgs[0]
+        img2 = list_imgs[1]
         n_img1 = img1.shape[0]
         n_img2 = img2.shape[0]
         print('n_img1: ', n_img1, 'n_img2: ', n_img2)
@@ -756,42 +754,32 @@ def concatenate_img_stacks_from_np_arrays(list_v, img_stack,
             n_img2_new = int(round(n_img1/k))
             print('k = ',k)
             img2_new = np.zeros([n_img1, img2.shape[1], img2.shape[2],3], dtype=img2.dtype)
-            
             #Duplicate each frame k times in the video with higher frame rate so the total number of frames is same for both videos
             for i in range(0,n_img2_new):
-                # print(f'{i}, {i*k}:{(i+1)*k}')
-                # print('img2[i,:,:].shape: ',img2[i,:,:,:].shape)
                 img2_new[i*k:(i+1)*k,:,:,:] = np.tile(img2[i,:,:,:], (k,1,1,1))
         print(f'img1.shape: {img1.shape}, dtype: {img1.dtype},\nimg2.shape: {img2_new.shape}, dtype: {img2_new.dtype} (new)')
-        img_stack[1] = img2_new
+        list_imgs[1] = img2_new
 
         #Playback rate of the highest frame rate
         playback_rate = pbr1
     else:
         #If the playback rate has not been set (=-1), set it to the same as the frame rate (real time)
         if playback_rate == -1:
-            playback_rate = v.frame_rate
-    #Create path for the video file
-    if len(dir_save) == 0:
-        dir_save = os.path.join(v.dir_exp, 'video_mp4_seq')
-
-    if not os.path.exists(dir_save):
-        os.mkdir(dir_save)
-    path_out = os.path.join(dir_save, file_name_label)
+            playback_rate = list_settings[0]['playback_rate']
 
     if merge_horizontally:
-        if len(img_stack) > 2:
-            img = img_stack[0]
-            for i in range(len(img_stack)-1):                
-                img = np.concatenate((img, img_stack[i+1]), axis=2)
-        elif len(img_stack) == 2:
-            img = np.concatenate((img_stack[0], img_stack[1]), axis=2)
+        if len(list_imgs) > 2:
+            img = list_imgs[0]
+            for i in range(len(list_imgs)-1):                
+                img = np.concatenate((img, list_imgs[i+1]), axis=2)
+        elif len(list_imgs) == 2:
+            img = np.concatenate((list_imgs[0], list_imgs[1]), axis=2)
         print(f'After merging the images horizontally:\n\timg.shape: {img.shape}, dtype: {img.dtype}')
     elif merge_vertically:
-        img = np.concatenate((img_stack[0], img_stack[1]), axis=1)
+        img = np.concatenate((list_imgs[0], list_imgs[1]), axis=1)
         print(f'After merging the images vertically:\n\timg.shape: {img.shape}, dtype: {img.dtype}')
     else:
-        img = np.vstack(img_stack)
+        img = np.vstack(list_imgs)
 
     print(f'\tDisplaying frame #{0}:')
     fig,ax = plt.subplots(figsize=(10,10))
@@ -803,7 +791,7 @@ def concatenate_img_stacks_from_np_arrays(list_v, img_stack,
     if len(resize) > 0:
         img = resize_img(img)
     if frame_rate_final != -1:
-        img = remove_frames(img, v.frame_rate, frame_rate_final)
+        img = remove_frames(img, list_settings[0]['frame_rate'], frame_rate_final)
         playback_rate = frame_rate_final
     toc = time.perf_counter()
     # n_frames = img.shape[0]
@@ -814,10 +802,10 @@ def concatenate_img_stacks_from_np_arrays(list_v, img_stack,
         return img
     else:
         #Write video using scikit-video
-        write_video_FFmpeg_skvideo(img, path_out, playback_rate, codex=codex,crf=crf, preset=preset)
+        write_video_FFmpeg_skvideo(img, file_path_save, playback_rate, codex=codex,crf=crf, preset=preset)
 
         #open the destination path folder    
-        os.startfile(os.path.dirname(path_out)) 
+        os.startfile(os.path.dirname(file_path_save)) 
 
 def concatenate_img_stacks_from_v_list(list_v, settings_general, frame_range, show_imgs = False, RGB_video=False, add_text=True, add_timestamp=True, text_y_pos = 30, settings_get_video={}, enhance_contrast=True, enhance_contrast_for_all_imgs_together=True, crop_imageJ=np.array([0]), text_color='white', add_pressure_vector=False,codex='libx264', playback_rate=-1, camera_pixel_width=16,crf=10, preset='slow', dic_p={}, d_vid_settings={}):
     """Concatenates videos from video objects from the list list_v. 

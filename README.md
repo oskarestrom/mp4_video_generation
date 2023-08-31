@@ -96,7 +96,7 @@ To give the viewer a sense of the passing time of the contents of the video, you
     }, #dictionary of timestamp to add to the video
     'nbr_of_decimals_for_timestamp':1, #number of decimals for the timestamp
 ```
-
+ 
 ### Modifying the text
 Depending on what options you set, there will be various texts in the video. Make sure to set a text color which leads to great contrast, i.e. black text on a bright background or white text on a darker background. As the dimensions (x and y) of the videos might differ, you might have to change the font size accordingly so that it is easy to read the text. Also, if the text is positioned at a bad location, change the x coordinated using 'text_x_pos':
 ```python
@@ -179,6 +179,7 @@ Because the default brightness and contrast settings might be sub-optimal, you c
     }, #dictionary of contrast settings
 ```
 <img src="videos/output_contrast.gif" width="150">
+
 ### RGB (color) video
 This script will also work with color videos (8-bit RGB).
 <img src="videos/output_color.gif" width="150">
@@ -190,6 +191,56 @@ If the ROI is very small, the video dimensions can be increased. Set 'enlarge_im
     'final_size_2D':(500,500), #final size of the image in 2D
 ```
 
+### Concatenating videos
+It is simple to concatenate videos horizontally, vertically or sequentially (in time). For this, you need two images, and two settings dictionary:
+```python
+settings1 = {
+    ... #fill the dictionary with the usual settings
+    'return_img':True,#return the image with the text and scale bar added
+}
+img1 = vid.save_as_mp4(img, settings21)
+settings2 = {
+    ... #fill the dictionary with the usual settings
+    'return_img':True,#return the image with the text and scale bar added
+}
+img2 = vid.save_as_mp4(img, settings2)
+```
+Note that the parameter 'return_img' is set to True. The function will then return the modified image as a numpy array (with scale bar and timestamp etc..) instead of creating a mp4-movie. 
+
+Thereafter, use the function concatenate_img_stacks_from_np_arrays() to concatenate the two image stacks and create a concatenated mp4-video. If both merge_horizontally and merge_vertically are set to False, the concatenation will be sequential.
+```python
+list_settings = [settings1, settings2]
+list_imgs = [img1, img2]
+kwargs = {
+        'file_path_save' : os.path.join(base_path,'output_concat.mp4'), #path to save the video
+        'playback_rate':15, 
+        'crf':10, # The range of the CRF scale is 0–51, where 0 is lossless, 23 is the default, and 51 is worst quality possible.]
+        'preset':'slow',
+        'merge_horizontally':True,
+        'merge_vertically':False,
+        }
+vid.concatenate_img_stacks_from_np_arrays(list_settings, 
+                                                      list_imgs, 
+                                                      **kwargs)
+```
+<img src="videos/output_concat.gif" width="150">
+
+```python
+list_settings = [settings1, settings2]
+list_imgs = [img1, img2]
+kwargs = {
+        'file_path_save' : os.path.join(base_path,'output_concat.mp4'), #path to save the video
+        'playback_rate':15, 
+        'crf':10, # The range of the CRF scale is 0–51, where 0 is lossless, 23 is the default, and 51 is worst quality possible.]
+        'preset':'slow',
+        'merge_horizontally':False,
+        'merge_vertically':False,
+        }
+vid.concatenate_img_stacks_from_np_arrays(list_settings, 
+                                                      list_imgs, 
+                                                      **kwargs)
+```
+<img src="videos/output_concat_time.gif" width="150">
 ## A note on the video quality and file size
 We can manipulate the quality and thus the size of the output video. Sometimes you want ultra-high resolution and can bear large videos. Other times you need to compress the video as much as possible while still maintaining a decent quality. We can play with the following parameters:
 
