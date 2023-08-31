@@ -76,7 +76,7 @@ You might have recorded your videos at a high frame rate. However, you want to p
 ```
 Make sure to also set the correct frame rate that the video was recorded with. It is stored in the metadata of the video.
 
-<img src="videos/output_playbackrate.gif" width="400">
+<img src="videos/output_playbackrate.gif" width="150">
 Notice that the video is sped up by increasing the playback_rate from 30.8 to 90 fps.
 
 ### Modifying the text
@@ -129,7 +129,7 @@ Sometimes, it can be great to add a title or other text to highlight features in
         'text_y_pos ':100, #y position of the text
     }, 
 ```
-<img src="videos/output_title.gif" width="400">
+<img src="videos/output_title.gif" width="150">
 
 ### Adding descriptional text
 To make it easier to understand what is going on in the video, you can add text. It can be for example, experiment parameters such as sample information,  pressure levels and magnification used. To not remove overshade the video, there is an option to increase the dimensions by adding a "black box" at the bottom of the video (set 'text_in_box_below' to True). 
@@ -145,7 +145,7 @@ To make it easier to understand what is going on in the video, you can add text.
         'text_in_box_below':True,
     }, 
 ```
-<img src="videos/output_text.gif" width="400">
+<img src="videos/output_text.gif" width="150">
 
 ### Adding varying pressure value text
 If one is performing an experiment with a pressure control system and the pressure varies over time, it can be useful to present the given pressure for each timestamp. For this, you need to have a numpy array with pressures that correspond to a numpy array with the frame numbers. To achieve this, you need to know the timestamp of the first frame to couple it with the timestamp of the pressures values.
@@ -161,7 +161,7 @@ If one is performing an experiment with a pressure control system and the pressu
         'font_size':19, #font size of the text
     }, 
 ```
-<img src="videos/output_pressure.gif" width="400">
+<img src="videos/output_pressure.gif" width="150">
 
 
 ### Modifying the contrast and brightness
@@ -184,7 +184,7 @@ It is possible to use this script for color videos. Just set the 'RGB_video' to 
     # Video settings
     'RGB_video':False, #is the video in color or not?
 ```
-<img src="videos/output_color.gif" width="400">
+<img src="videos/output_color.gif" width="150">
 
 ### Enlarging the video (if small)
 If the ROI is very small, the video dimensions can be increased. Set 'enlarge_image' to True and specify the final dimensions in pixel values.
