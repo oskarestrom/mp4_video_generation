@@ -5,15 +5,15 @@ build-backend = "hatchling.build"
 [tool.hatch.build]
 include = [
   "utils/utils/SourceSansPro-Regular.ttf",
+  "*.py"
 ]
 exclude = [
-  "tests/**",
-  "videos/**",
+  "videos/*.gif",
 ]
 
 [project]
 name = "mp4_video_generation"
-version = "0.0.2"
+version = "0.0.3"
 authors = [
   { name="Oskar E. Strom", email="oskarestrom@protonmail.com" },
 ]
