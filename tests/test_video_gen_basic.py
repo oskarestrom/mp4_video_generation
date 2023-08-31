@@ -44,7 +44,7 @@ settings = {
         'camera_pixel_width':16, #camera pixel width in microns
     }, 
     #Timestamp
-    'd_scalebar':{
+    'd_timestamp':{
         'nbr_of_decimals_for_timestamp':1, #number of decimals for the timestamp
     }
 }
