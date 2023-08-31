@@ -209,6 +209,8 @@ img2 = vid.save_as_mp4(img, settings2)
 Note that the parameter 'return_img' is set to True. The function will then return the modified image as a numpy array (with scale bar and timestamp etc..) instead of creating a mp4-movie. 
 
 Thereafter, use the function concatenate_img_stacks_from_np_arrays() to concatenate the two image stacks and create a concatenated mp4-video. If both merge_horizontally and merge_vertically are set to False, the concatenation will be sequential.
+
+#### Horizontal Concatenation
 ```python
 list_settings = [settings1, settings2]
 list_imgs = [img1, img2]
@@ -226,6 +228,7 @@ vid.concatenate_img_stacks_from_np_arrays(list_settings,
 ```
 <img src="videos/output_concat.gif" width="300">
 
+#### Sequential Concatenation
 ```python
 list_settings = [settings1, settings2]
 list_imgs = [img1, img2]
