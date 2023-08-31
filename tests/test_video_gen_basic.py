@@ -26,7 +26,7 @@ settings = {
     # Basic settings
     'file_path_save' : os.path.join(base_path,'output.mp4'), #path to save the video
     'frame_rate': 30.8, #frame rate of the video
-    'playback_rate':5, #playback rate of the video. If set to -1, the playback rate will be the same as the frame rate 
+    'playback_rate':15, #playback rate of the video. If set to -1, the playback rate will be the same as the frame rate 
     'frame_range':frame_range, #frame range for the video, if set to [0,0], all available frames will be used
     # Video Quality
     'crf':20, #crf used to save the video
@@ -37,7 +37,7 @@ settings = {
 
     # General text settings
     'text_color':'white', #color of the text
-
+    'font_size':19, #font size of the text
     #Scale bar
     'd_scalebar':{ #dictionary of scale bar to add to the video
         'mag':'100x', #magnification of the microscope used to acquire the video
@@ -46,6 +46,7 @@ settings = {
     #Timestamp
     'd_timestamp':{
         'nbr_of_decimals_for_timestamp':1, #number of decimals for the timestamp
+        'font_size':19,
     }
 }
 vid.save_as_mp4(img, settings)

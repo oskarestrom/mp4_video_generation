@@ -2,6 +2,7 @@ from skimage import exposure
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 import os
+import matplotlib
 import mpl_toolkits.axes_grid1.anchored_artists as mpl_aa
 
 import mp4_video_generation.fun_figs as ff
@@ -60,7 +61,7 @@ def add_text_stack(img_stack, txt='', text_x_pos=20, text_y_pos=30, text_color='
         img_stack[i] = add_text(img_stack[i], txt, text_x_pos=text_x_pos, text_y_pos=text_y_pos, text_color=text_color, font_size=font_size, alignment=alignment)
     return img_stack
 
-def add_text(img, txt='', text_x_pos=20, text_y_pos=30, text_color='white', font_size=19, alignment='left'):
+def add_text(img, txt='', text_x_pos=20, text_y_pos=30, text_color='white', font_size=6, alignment='left'):
     """Add text to a numpy array"""
 
     # print('shape before text, img: ', img.shape)
@@ -78,9 +79,10 @@ def add_text(img, txt='', text_x_pos=20, text_y_pos=30, text_color='white', font
     # Call draw Method to add 2D graphics in an image
     drawer = ImageDraw.Draw(pil_img)
 
+    
     #Get the good-looking font Sanspro regular. This font has to be downloaded separately and the directory of the font specified.
     font = get_font_sanspro_regular(font_size=font_size) #Get the good-looking font Sanspro regular. This font has to be downloaded separately and the directory of the font specified.
-
+    # print(f'Using {font.getname()}, font size: ', font_size)
     #Get text color pixel value
     if text_color == 'white':
         text_pixel_value = 255 #color for the scale bar and the text, 255 = white
@@ -120,21 +122,35 @@ def get_font_sanspro_regular(main_dir='', font_size=19):
     #     font [ImageFont]: [font SourceSansPro-Regular]
     # """
     #Get the path of the font
-    main_path = os.path.normpath(main_dir)
+    # main_path = os.path.normpath(main_dir)
     # if os.getcwd() == main_path:
     #     base_dir = main_path
     # elif os.path.dirname(os.getcwd()) == main_path:
     #     base_dir = os.path.dirname(os.getcwd())
-    dir_utils = os.path.join(main_path, 'utils')
-    path_font = os.path.join(dir_utils, 'SourceSansPro-Regular.ttf')
-    if os.path.exists(path_font):        
-        font = ImageFont.truetype(font=path_font, size=font_size)
-    else:
-        print(f'Cound not find the path to the font SourceSansPro-Regular: \n{path_font}')
+    # dir_utils = os.path.join(main_path, 'mp4_video_generation')
+    # path_font = os.path.join(main_path, 'SourceSansPro-Regular.ttf')
+    # if os.path.exists(path_font):        
+    #     font = ImageFont.truetype(font=path_font, size=font_size)
+    # else:
+    #     print(f'Cound not find the path to the font SourceSansPro-Regular: \n{path_font}')
+    #     font = ImageFont.load_default()  
+
+    font = find_arial_font(font_size=font_size)
+    if font == '':
+        print('DID NOT FIND ARIAL')
         font = ImageFont.load_default()  
     return font
 
-def add_timestamp(img_stack, fps, pad=41, text_color='white', font_size=19, nbr_of_decimals=1, d_timestamp={}):
+def find_arial_font(font_size=19):
+    system_fonts = matplotlib.font_manager.findSystemFonts(fontpaths=None, fontext='ttf')
+    system_fonts
+    font_to_use = ''
+    for font in system_fonts:
+        if 'arial.ttf' in font.lower():
+            font_to_use = ImageFont.truetype(font, font_size)
+    return font_to_use
+
+def add_timestamp(img_stack, fps, pad=41, text_color='white', font_size=6, nbr_of_decimals=1, d_timestamp={}):
     """[Add timestamp to numpy stack]
 
     Args:
@@ -165,6 +181,7 @@ def add_timestamp(img_stack, fps, pad=41, text_color='white', font_size=19, nbr_
     else:
         text_x_pos = 20
 
+    print('Timestamp fontsize: ', font_size)
     #Add timestamp for every frame of the image stack
     for i in range(0,len(img_stack)):
         t_sec = i/fps #Time in seconds

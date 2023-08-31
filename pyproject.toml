@@ -1,19 +1,19 @@
 [build-system]
-requires = ["hatchling", "numpy >= 1.19, < 2", "pandas >= 1.3.3, < 2", "nd2reader >= 3.3.0, < 4", "pims-nd2 >= 1.1, < 2"]
+requires = ["hatchling", "numpy >= 1.19, < 2", "pandas >= 1.3.3, < 2", "nd2reader >= 3.3.0, < 4", "pims-nd2 >= 1.1, < 2, matplotlib"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build]
-include = [
-  "utils/utils/SourceSansPro-Regular.ttf",
-  "*.py"
-]
 exclude = [
   "videos/*.gif",
 ]
 
+[tool.hatch.build.targets.wheel]
+only-include = ["mp4_video_generation"]
+
+
 [project]
 name = "mp4_video_generation"
-version = "0.0.3"
+version = "0.0.7"
 authors = [
   { name="Oskar E. Strom", email="oskarestrom@protonmail.com" },
 ]
