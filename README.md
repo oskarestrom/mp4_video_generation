@@ -5,11 +5,11 @@ While it is easy to save images in python into png or tiff, it is more difficult
 ### Dependencies:
 You need to install the following libraries to run this package:
 ```shell
-- pip install numpy > 1.21.5
-- pip install matplotlib > 3.5.2
-- pip install pillow > 9.2.0
-- pip install scikit-image > 0.19.2
-- pip install scikit-video > 1.1.11
+- pip install numpy >= 1.19, < 2
+- pip install matplotlib >= 3.5.2, < 4
+- pip install pillow > 9.2.0, < 10
+- pip install scikit-image > 0.19.2, < 1
+- pip install scikit-video > 1.1.11, < 2
 - pip install tifffile > 2021.7.2
 ```
 ### Install this package
