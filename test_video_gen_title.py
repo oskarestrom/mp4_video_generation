@@ -61,7 +61,7 @@ settings = {
         'text_color':'white', #color of the text
         'font_size':19, #font size of the text
         'text_y_pos ':100, #y position of the text
-    }, #dictionary of title text box to add to the video
+    }, 
 
 }
 vid.save_as_mp4(img, settings)

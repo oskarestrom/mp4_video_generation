@@ -52,7 +52,7 @@ settings = {
         'text_x_pos':10, #y position of the timestamp
     }, #dictionary of timestamp to add to the video
 
-     #Extra text e.g. a title
+     #Extra text
     'd_extra_text':{ #dictionary of extra text to add to the video
         'text':'50 mbar, T4 DNA', #text to add to the video
         'text_x_pos':10, #x position of the text
