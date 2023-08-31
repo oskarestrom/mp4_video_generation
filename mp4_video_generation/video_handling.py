@@ -26,80 +26,6 @@ import mp4_video_generation.fun_figs as ff
 import mp4_video_generation.fun_misc as fun_misc
 from PIL import Image
 
-def add_title_text_box(img, d):
-    if len(d) > 0:
-        
-        box_color = 'black'
-        if 'h_box' in d:
-            h_box = d['h_box']
-        else:
-            h_box = 60    
-        if 'w_box' in d:
-            w_box = d['w_box']
-        else:
-            w_box = 60    
-        if 'box_color' in d:
-            box_color = d['box_color']
-        else:
-            box_color = 'black' 
-
-        if 'padding_h' in d:
-            padding_h = d['padding_h']
-        else:
-            padding_h = 10 
-
-        if 'text' in d:
-            text = d['padding_h']
-        else:
-            text = 'text'
-
-        if 'text_color' in d:
-            text_color = d['text_color']
-        else:
-            text_color = 'black'
-        if 'font_size' in d:
-            font_size = d['font_size']
-        else:
-            font_size = 20
-
-        if len(img.shape) == 3: #Grayscale image   
-            n,h_img,w_img = img.shape 
-        elif len(img.shape) == 4: #Color image
-            n,h_img,w_img,n_colors = img.shape
-
-        w_half = int(np.round(w_img/2))
-        w_box_half = int(np.round(w_box/2))
-        x1 = w_half - w_box_half
-        x2 = w_half + w_box_half
-
-        y1 = padding_h
-        y2 = padding_h + h_box
-
-        print(f'Inserting title text box of height {h_box} and width {w_box}\nimg shape = {img.shape}\nimg dtype = {img.dtype}')
-
-        if len(img.shape) == 3: #Grayscale image   
-            img_box = np.zeros([n,h_box, w_box],dtype=img.dtype)
-            if box_color == 'white':
-                img_box = img_box + 255
-            elif box_color == 'gray':
-                img_box = img_box + 127
-            img[:,y1:y2,x1:x2] = img_box
-
-
-            # img_box[:,0:h_img,x1:x2] = img
-
-        # elif len(img.shape) == 4: #Color image
-        #     img2 = np.zeros([n,h_img+h_box,w_box, n_colors],dtype=img.dtype)
-        #     if box_color == 'white':
-        #         img2 = img2 + 255
-        #     img2[:,0:h_img,:,:] = img 
-        # y_shift_text = 15
-        text_x_pos = w_half
-        extra_text_y_pos = int(np.round((padding_h + h_box/2)))
-        img = image_manipulation.add_text_stack(img, txt=text, text_x_pos=text_x_pos, text_y_pos=extra_text_y_pos, text_color=text_color, font_size=font_size, alignment='center')
-
-    return img
-
 def resize_img(img, resize=(360,480)):
     if len(img.shape) == 3: #Grayscale image
         n,h,w = img.shape
@@ -205,14 +131,11 @@ def save_as_mp4(img, settings):
             RGB_video (bool, optional): [Is the image stack in RGB (color)?]. Defaults to False.
             enhance_contrast (bool, optional): [Enhance the contrast]. Defaults to True.
             disp_first_frame (bool, optional): [Display the first frame to see the contrast/brightness outcome    ]. Defaults to False.
-            add_scale_bar (bool, optional): [Add scale bar to resulting video]. Defaults to True.
-            add_timestamp (bool, optional): [Add timestamp to resulting video]. Defaults to True.
             camera_pixel_width (int, optional): [Camera pixel width in microns]. Defaults to 16.
             mag ([str]): [Magnification, e.g. 100x]
             playback_rate (int, optional): [Frame rate of the resulting video when being played]. Defaults to -1 which results in real-time playback rate.
             crf (int, optional): [Constant rate factor (CRF) which sets the quality of the output video. The range of the CRF scale is 0–51, where 0 is lossless, 23 is the default, and 51 is worst quality possible.]. Defaults to 10.
             preset (str, optional): [Speed to compression ratio. the slower the better compression, in princple, default is slow]. Defaults to 'slow'.
-            add_pressure_vector (bool, optional): [Add pressure label to video]. Defaults to False.
             dic_p (dict, optional): [Dictionary containing details of the pressure labeling]. Defaults to {}.
     """
     if not 'codex' in settings:
@@ -227,8 +150,9 @@ def save_as_mp4(img, settings):
     print(f"Creating video object (\n\t- Image shape: {img.shape}\n\t- data type: {img.dtype}\n\t- codex: {settings['codex']}\n\t- color: {settings['RGB_video']}\n\t- enhance contrast: {settings['enhance_contrast']}\n\t)")
     tic = time.perf_counter()
 
-
     #Range of frames to be included, if equal to [0,0], all available frames will be processed
+    if not 'frame_range' in settings:
+        settings['frame_range'] = [0,0]
     frame_range = settings['frame_range']
     if frame_range[-1] == 0:
         img = img.copy()
@@ -253,53 +177,33 @@ def save_as_mp4(img, settings):
 
     if 'final_size_2D' in settings:
         if len(settings['final_size_2D']) > 0:
-            n,h,w = img.shape
-            h_final, w_final = settings['final_size_2D']
-            n_enlargement = np.int(np.floor(w_final/w))        
-            img = ff.enlarge_img(img, enlargement=n_enlargement)
-            n,h,w = img.shape
-            missing_rows = h_final - h   
-
-            img2 = np.zeros([n,h+missing_rows,w],dtype=img.dtype)  
-            img2[:,0:h,:] = img   
-            img = img2
+            img = enlarge_vid(img, settings)
 
     if 'd_title_text_box' in settings:
         if len(settings['d_title_text_box']) > 0:
-            img = add_title_text_box(img, settings['d_title_text_box'])
+            img = add_title_text_box(img, settings)
 
-    if not 'extra_text_y_pos' in settings:
-        settings['extra_text_y_pos'] = 30
-
-    extra_text_y_pos = settings['extra_text_y_pos'] #default value
     if 'd_extra_text' in settings:
         if len(settings['d_extra_text']) > 0:
-            img, extra_text_y_pos, font_size = add_extra_text_fun(img, settings['d_extra_text'])
+            img = add_extra_text(img, settings)
 
-    if 'extra_text' in settings:
-        if len(settings['extra_text']) > 0:
-            img = image_manipulation.add_text_stack(img, txt=settings['extra_text'], text_x_pos=settings['text_x_pos'], text_y_pos=extra_text_y_pos, text_color=settings['text_color'], font_size=font_size)
+    if 'd_scalebar' in settings:
+        if len(settings['d_scalebar']) > 0: #Add scale bar                         
+            img = image_manipulation.add_scalebar_in_place_stack(img, 
+                                                                 settings['d_scalebar'], 
+                                                                 text_color=settings['text_color'])
 
-    if 'add_scale_bar' in settings:
-        if settings['add_scale_bar']: #Add scale bar
-            print('mag = ', settings['mag'])
-            if not 'd_scalebar' in settings:
-                settings['d_scalebar'] = {}
-                
-            img = image_manipulation.add_scalebar_in_place_stack(img, settings['mag'], camera_pixel_width=settings['camera_pixel_width'], text_color=settings['text_color'], d_scalebar=settings['d_scalebar'])
-
-    if 'add_pressure_vector' in settings:
-        if settings['add_pressure_vector']: #Add pressure label (in mbar)
-            img = image_manipulation.add_pressure_vector_to_stack(img,settings['dic_p'])
+    if 'd_pressure' in settings:
+        if len(settings['d_pressure']) > 0: #Add pressure label (in mbar)
+            img = image_manipulation.add_pressure_vector_to_stack(img,
+                                                                  settings['d_pressure'])
     if 'd_arrow' in settings:
         if len(settings['d_arrow']) > 0:
             add_arrow_stack(img, settings['d_arrow'])
 
-    if 'add_timestamp' in settings:
-        if not 'd_timestamp' in settings:
-            settings['d_timestamp'] = {}
-        if settings['add_timestamp']: #Add time stamp
-            add_timestamp_to_vid(img, settings, extra_text_y_pos)
+    if 'd_timestamp' in settings:
+        if len(settings['d_timestamp']) > 0: #Add time stamp
+            add_timestamp_to_vid(img, settings)
 
     if not 'return_img' in settings:
         settings['return_img'] = False
@@ -317,12 +221,12 @@ def save_as_mp4(img, settings):
             if settings['playback_rate'] == -1:
                 settings['playback_rate'] = settings['frame_rate']
 
-        if not 'remove_frames_to_achieve_frame_rate' in settings:
-            settings['remove_frames_to_achieve_frame_rate'] = -1
+        if not 'frame_rate_final' in settings:
+            settings['frame_rate_final'] = -1
 
-        if settings['remove_frames_to_achieve_frame_rate'] != -1:
-            img = remove_frames(img, settings['frame_rate'], settings['remove_frames_to_achieve_frame_rate'])
-            settings['playback_rate'] = settings['remove_frames_to_achieve_frame_rate']
+        if settings['frame_rate_final'] != -1:
+            img = remove_frames(img, settings['frame_rate'], settings['frame_rate_final'])
+            settings['playback_rate'] = settings['frame_rate_final']
 
         extra_arg = {}
         if 'codex' in settings:
@@ -333,7 +237,9 @@ def save_as_mp4(img, settings):
             extra_arg['preset'] = settings['preset']
 
         #Write video using scikit-video
-        write_video_FFmpeg_skvideo(img, settings['file_path_save'], settings['frame_rate'], **extra_arg) #, codex=codex, pix_fmt=pix_fmt, crf=crf, preset=preset)
+        write_video_FFmpeg_skvideo(img, 
+                                   settings['file_path_save'], 
+                                   settings['playback_rate'], **extra_arg) #, codex=codex, pix_fmt=pix_fmt, crf=crf, preset=preset)
 
         #open the destination path folder    
         os.startfile(os.path.dirname(settings['file_path_save'])) 
@@ -343,11 +249,26 @@ def save_as_mp4(img, settings):
         print(f'\t- Created video object of {n_frames} {img.dtype} frame(s) to file '+os.path.basename(settings['file_path_save'])+f' in {toc - tic:0.1f} seconds')    
         print('== Finished writing video file ==')
 
-def add_timestamp_to_vid(img, settings, extra_text_y_pos):
+def enlarge_vid(img, settings):
+    """Enlarge video to final size"""
+    n,h,w = img.shape
+    h_final, w_final = settings['final_size_2D']
+    n_enlargement = np.int(np.floor(w_final/w))        
+    img = ff.enlarge_img(img, enlargement=n_enlargement)
+    n,h,w = img.shape
+    missing_rows = h_final - h   
+    img2 = np.zeros([n,h+missing_rows,w],dtype=img.dtype)  
+    img2[:,0:h,:] = img   
+    return img2
+
+def add_timestamp_to_vid(img, settings):
     """Add timestamp to video"""
 
     d_timestamp = settings['d_timestamp']
-    mag = settings['mag']
+    if not 'd_scalebar' in settings:
+        raise ValueError('The d_scalebar is not defined. It is needed for timestamp.')
+    d_scalebar = settings['d_scalebar']
+    mag = d_scalebar['mag']
     if 'pad_timestamp' in d_timestamp:
         pad_timestamp = d_timestamp['pad_timestamp']
     else:
@@ -363,11 +284,119 @@ def add_timestamp_to_vid(img, settings, extra_text_y_pos):
         font_size_timestamp = d_timestamp['font_size']
     else:
         font_size_timestamp = 19
-    d_timestamp['text_y_pos'] = extra_text_y_pos
-    img = image_manipulation.add_timestamp(img, settings['frame_rate'], pad=pad_timestamp, text_color=settings['text_color'], nbr_of_decimals=settings['nbr_of_decimals_for_timestamp'], font_size=font_size_timestamp, d_timestamp=d_timestamp)
+    img = image_manipulation.add_timestamp(img, 
+                                           settings['frame_rate'], 
+                                           pad=pad_timestamp, 
+                                           text_color=settings['text_color'], 
+                                           nbr_of_decimals=d_timestamp['nbr_of_decimals_for_timestamp'], 
+                                           font_size=font_size_timestamp, 
+                                           d_timestamp=d_timestamp)
+
+def add_extra_text(img, settings):
+    d = settings['d_extra_text']
+
+    img, extra_text_y_pos, font_size = add_box(img, settings['d_extra_text'])
+    if extra_text_y_pos == -1:
+        extra_text_y_pos = d['text_x_pos']
+
+    img = image_manipulation.add_text_stack(img, 
+                                             txt=d['text'], 
+                                             text_x_pos=d['text_x_pos'], 
+                                             text_y_pos=extra_text_y_pos, 
+                                             text_color=settings['text_color'], 
+                                             font_size=font_size)
+    return img
+
+def add_title_text_box(img, settings):
+    d = settings['d_title_text_box']
+    if len(d) > 0:
+        
+        if not 'extra_text_y_pos' in settings:
+            settings['extra_text_y_pos'] = 30
+
+        box_color = 'black'
+        if 'h_box' in d:
+            h_box = d['h_box']
+        else:
+            h_box = 60    
+        if 'w_box' in d:
+            w_box = d['w_box']
+        else:
+            w_box = 60    
+        if 'box_color' in d:
+            box_color = d['box_color']
+        else:
+            box_color = 'black' 
+
+        if 'padding_h' in d:
+            padding_h = d['padding_h']
+        else:
+            padding_h = 10 
+
+        if 'text' in d:
+            text = d['text']
+        else:
+            text = 'text'
+
+        if 'text_color' in d:
+            text_color = d['text_color']
+        else:
+            text_color = 'black'
+        if 'font_size' in d:
+            font_size = d['font_size']
+        else:
+            font_size = 20
+
+        if len(img.shape) == 3: #Grayscale image   
+            n,h_img,w_img = img.shape 
+        elif len(img.shape) == 4: #Color image
+            n,h_img,w_img,n_colors = img.shape
+
+        w_half = int(np.round(w_img/2))
+        if w_box == 'full':
+            w_box = w_img
+            x1 = 0
+            x2 = w_img
+        else:           
+            w_box_half = int(np.round(w_box/2))
+            x1 = w_half - w_box_half
+            x2 = w_half + w_box_half
+
+        y1 = padding_h
+        y2 = padding_h + h_box
+
+        print(f'Inserting title text box of height {h_box} and width {w_box}\nimg shape = {img.shape}\nimg dtype = {img.dtype}')
+
+        if len(img.shape) == 3: #Grayscale image   
+            img_box = np.zeros([n,h_box, w_box],dtype=img.dtype)
+            if box_color == 'white':
+                img_box = img_box + 255
+            elif box_color == 'gray':
+                img_box = img_box + 127
+            img[:,y1:y2,x1:x2] = img_box
 
 
-def add_extra_text_fun(img, d_extra_text):
+            # img_box[:,0:h_img,x1:x2] = img
+
+        # elif len(img.shape) == 4: #Color image
+        #     img2 = np.zeros([n,h_img+h_box,w_box, n_colors],dtype=img.dtype)
+        #     if box_color == 'white':
+        #         img2 = img2 + 255
+        #     img2[:,0:h_img,:,:] = img 
+        # y_shift_text = 15
+        text_x_pos = w_half
+        extra_text_y_pos = int(np.round((padding_h + h_box/2)))
+        img = image_manipulation.add_text_stack(img, 
+                                                txt=text, 
+                                                text_x_pos=text_x_pos, 
+                                                text_y_pos=extra_text_y_pos, 
+                                                text_color=text_color, 
+                                                font_size=font_size, 
+                                                alignment='center')
+
+    return img
+
+def add_box(img, d_extra_text):
 
     if 'text_in_box_below' in d_extra_text:
         if d_extra_text['text_in_box_below'] == True:             
@@ -397,7 +426,8 @@ def add_extra_text_fun(img, d_extra_text):
             #Updated values
             h = img.shape[1]
             extra_text_y_pos = int(h - h_box)
-            
+    else: 
+        extra_text_y_pos = -1        
     if 'font_size' in d_extra_text:
         font_size = d_extra_text['font_size']
     else:
@@ -458,6 +488,9 @@ def write_video_FFmpeg_skvideo(img,
     if len(img.shape) == 3:
         n_frames,h,w = img.shape
     elif len(img.shape) == 4:
+        print('image shape = ', img.shape)
+        img = img.transpose(0,2,3,1)
+        print('image shape after transpose = ', img.shape)
         n_frames,h,w,n_colors = img.shape
 
     #If the dimensions are uneven, set them to even. Otherwise FFMPEG will crash...
@@ -704,7 +737,7 @@ def concatenate_img_stacks_from_np_arrays(list_v, img_stack,
                                         play_back_rates=[], 
                                         return_img=False,
                                         resize=(),
-                                        remove_frames_to_achieve_frame_rate=-1,
+                                        frame_rate_final=-1,
                                         ):
 
     v = list_v[0]
@@ -769,9 +802,9 @@ def concatenate_img_stacks_from_np_arrays(list_v, img_stack,
 
     if len(resize) > 0:
         img = resize_img(img)
-    if remove_frames_to_achieve_frame_rate != -1:
-        img = remove_frames(img, v.frame_rate, remove_frames_to_achieve_frame_rate)
-        playback_rate = remove_frames_to_achieve_frame_rate
+    if frame_rate_final != -1:
+        img = remove_frames(img, v.frame_rate, frame_rate_final)
+        playback_rate = frame_rate_final
     toc = time.perf_counter()
     # n_frames = img.shape[0]
     # print(f'\t- Created video object of {n_frames} {img_stack.dtype} frame(s) to file '+os.path.basename(path_out)+f' in {toc - tic:0.1f} seconds')    
@@ -786,7 +819,7 @@ def concatenate_img_stacks_from_np_arrays(list_v, img_stack,
         #open the destination path folder    
         os.startfile(os.path.dirname(path_out)) 
 
-def concatenate_img_stacks_from_v_list(list_v, settings_general, frame_range, show_imgs = False, RGB_video=False, add_text=True, add_timestamp=True, text_y_pos = 30, settings_get_video={}, enhance_contrast=True, enhance_contrast_for_all_imgs_together=True, crop_imageJ=np.array([0]), text_color='white', add_pressure_vector=False,codex='libx264', playback_rate=-1, camera_pixel_width=16,crf=10, preset='slow', dic_p={}, add_scale_bar=False, d_vid_settings={}):
+def concatenate_img_stacks_from_v_list(list_v, settings_general, frame_range, show_imgs = False, RGB_video=False, add_text=True, add_timestamp=True, text_y_pos = 30, settings_get_video={}, enhance_contrast=True, enhance_contrast_for_all_imgs_together=True, crop_imageJ=np.array([0]), text_color='white', add_pressure_vector=False,codex='libx264', playback_rate=-1, camera_pixel_width=16,crf=10, preset='slow', dic_p={}, d_vid_settings={}):
     """Concatenates videos from video objects from the list list_v. 
     
     Right now only black and white images.
@@ -865,7 +898,6 @@ def concatenate_img_stacks_from_v_list(list_v, settings_general, frame_range, sh
             'preset':'slow',
             'add_timestamp':False, 
             'enhance_contrast':False, 
-            'add_scale_bar':add_scale_bar, 
             'RGB_video': False,
             'text_color':text_color,
             'camera_pixel_width':16,            

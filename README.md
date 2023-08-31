@@ -16,7 +16,7 @@ You need to install the following libraries to run this package:
 
 ## Generation of a mp4 movie
 
-### Input video:
+### Input (raw) video:
 <img src="videos/input_converted.gif" width="400">
 
 ```python
@@ -60,7 +60,7 @@ vid.save_as_mp4(img, settings)
 ```
 
 ### Output video:
-<img src="videos/output_converted.gif" width="400">
+<img src="videos/output.gif" width="400">
 
 ## Extensive settings list
 It is possible to modify the output movie in numerable ways. The settings dictionary below show all the possible options. See below for comments on each option.
@@ -76,8 +76,8 @@ You might have recorded your videos at a high frame rate. However, you want to p
 ```
 Make sure to also set the correct frame rate that the video was recorded with. It is stored in the metadata of the video.
 
-<img src="videos/output_frame_rate.gif" width="400">
-Notice that the video is slowed down by lowering the playback_rate from 30.8 to 5.
+<img src="videos/output_playbackrate.gif" width="400">
+Notice that the video is sped up by increasing the playback_rate from 30.8 to 90 fps.
 
 ### Modifying the text
 Depending on what options you set, there will be various texts in the video. Make sure to set a text color which leads to great contrast, i.e. black text on a bright background or white text on a darker background. As the dimensions (x and y) of the videos might differ, you might have to change the font size accordingly so that it is easy to read the text. Also, if the text is positioned at a bad location, change the x coordinated using 'text_x_pos':
@@ -128,6 +128,15 @@ Sometimes, it can be great to add a title or other text to highlight features in
         'font_size':19, #font size of the text
     }, #dictionary of title text box to add to the video
 ```
+<img src="videos/output_title.gif" width="400">
+
+### Adding descriptional text
+Sometimes, it can be great to add a title or other text to highlight features in the video. It can also be useful to add a background box (e.g. in black) to surround the title so it becomes more visible.
+```python
+
+```
+<img src="videos/output_title.gif" width="400">
+
 ### Adding varying pressure value text
 If one is performing an experiment with a pressure control system and the pressure varies over time, it can be useful to present the given pressure for each timestamp. For this, you need to have a numpy array with pressures that correspond to a numpy array with the frame numbers. To achieve this, you need to know the timestamp of the first frame to couple it with the timestamp of the pressures values.
 ```python
@@ -189,11 +198,11 @@ We can manipulate the quality and thus the size of the output video. Sometimes y
 
 - Frame rate. We can remove frames if the video was recorded with an excessive frame rate.
 ```python
-    'remove_frames_to_achieve_frame_rate':20, #Set the final frame rate, remove frames to achieve the desired frame rate. If set to -1, no frames will be removed
+    'frame_rate_final':20, #Set the final (lower) frame rate, remove frames to achieve the desired frame rate. If set to -1, no frames will be removed
 ```
 - crf (int, optional): [Constant rate factor (CRF) which sets the quality of the output video. The range of the CRF scale is 0–51, where 0 is lossless, 23 is the default, and 51 is worst quality possible.]. Defaults to 10.
 ```python
-    'crf':10, #Constant rate factor (CRF) used to save the video
+    'crf':10, #default constant rate factor (CRF)
 ```
 - preset  (str, optional): Speed to compression ratio. the slower the better compression, in princple, default is slow. Options:
     - ultrafast
@@ -206,11 +215,11 @@ We can manipulate the quality and thus the size of the output video. Sometimes y
     - slower
     - veryslow 
 ```python
-    'preset':'slow', #preset used to save the video
+    'preset':'slow', #default preset
 ```
 - codex (str, optional): [Codex for writing the video]. Defaults to 'libx264'. For lower quality output (and very small videos), select DIVX or mpeg4. I have always used libx264 as I received errors for other codices. However, this is something one can play with.]
 ```python
-    'codex':'libx264', #codex used to save the video
+    'codex':'libx264', #default codex
 ```
 Note that crf has to be above 10 and preset has to be slow or faster in order to play the video in powerpoint.
 other options see [https://trac.ffmpeg.org/wiki/Encode/H.264](https://trac.ffmpeg.org/wiki/Encode/H.264)

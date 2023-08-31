@@ -63,11 +63,17 @@ def add_text_stack(img_stack, txt='', text_x_pos=20, text_y_pos=30, text_color='
 def add_text(img, txt='', text_x_pos=20, text_y_pos=30, text_color='white', font_size=19, alignment='left'):
     """Add text to a numpy array"""
 
+    # print('shape before text, img: ', img.shape)
     #Rescale the image to uint8 if the input data type is uint16
     if img.dtype == np.uint16:
-        pil_img = Image.fromarray(ff.rescale_from_uint16_to_uint8(img))
-    else:
+        img = ff.rescale_from_uint16_to_uint8(img)
+    
+    if len(img.shape) == 2:
         pil_img = Image.fromarray(img)
+    else: #color, RGB
+        pil_img = Image.fromarray(img.transpose(1,2,0), mode="RGB")        
+        # pil_img = Image.fromarray(np.array(img).astype(np.uint8).transpose(1,2,0))
+
 
     # Call draw Method to add 2D graphics in an image
     drawer = ImageDraw.Draw(pil_img)
@@ -96,6 +102,12 @@ def add_text(img, txt='', text_x_pos=20, text_y_pos=30, text_color='white', font
     else:
         drawer.text(xy=(text_x_pos, text_y_pos),  text=txt, fill=text_pixel_value, font=font)
     img_stack = np.array(pil_img) #Convert to an unsigned 8-bit integer numpy array
+   
+    # print('shape after text, img: ', img_stack.shape)
+    if len(img.shape) == 3: #color, reshape into original shape
+        img_stack = img_stack.transpose(2,0,1)
+
+    # print('shape after modification, img: ', img_stack.shape)
     return img_stack
 
 def get_font_sanspro_regular(main_dir='', font_size=19):
@@ -122,7 +134,7 @@ def get_font_sanspro_regular(main_dir='', font_size=19):
         font = ImageFont.load_default()  
     return font
 
-def add_timestamp(img_stack, fps, pad=41, text_x_pos=20, text_y_pos=-1, text_color='white', font_size=19, nbr_of_decimals=1, d_timestamp={}):
+def add_timestamp(img_stack, fps, pad=41, text_color='white', font_size=19, nbr_of_decimals=1, d_timestamp={}):
     """[Add timestamp to numpy stack]
 
     Args:
@@ -138,19 +150,34 @@ def add_timestamp(img_stack, fps, pad=41, text_x_pos=20, text_y_pos=-1, text_col
         print(f'Wrong datatype of the input image stack ({img_stack.dtype}), it should be np.uint8, rescaling...')
         img_stack = ff.rescale_from_uint16_to_uint8(img_stack)
 
-    if text_y_pos == -1:
-        h = img_stack.shape[1] #Height of the image
-        text_y_pos = h-pad #position of the text in the y-direction
     if 'text_y_pos' in d_timestamp:
         text_y_pos = d_timestamp['text_y_pos']
+    else:
+        if len(img_stack.shape) == 2:
+            h = img_stack.shape[1] #Height of the image
+        elif len(img_stack.shape) == 3: #color
+            h = img_stack.shape[2] #Height of the image
+
+        text_y_pos = h-pad #position of the text in the y-direction
+
+    if 'text_x_pos' in d_timestamp:
+        text_x_pos = d_timestamp['text_x_pos']
+    else:
+        text_x_pos = 20
+
     #Add timestamp for every frame of the image stack
     for i in range(0,len(img_stack)):
         t_sec = i/fps #Time in seconds
         txt = f'{t_sec:.{nbr_of_decimals}f} s' #text to add
-        img_stack[i] = add_text(img_stack[i], txt, text_x_pos=text_x_pos, text_y_pos=text_y_pos, text_color=text_color, font_size=font_size)
+        # print('shape of image stack: ', img_stack.shape)
+        img_stack[i] = add_text(img_stack[i], 
+                                txt, text_x_pos=text_x_pos, 
+                                text_y_pos=text_y_pos, 
+                                text_color=text_color, 
+                                font_size=font_size)
     return img_stack
 
-def add_scalebar_in_place_stack(img_stack, mag, camera_pixel_width, draw_text=True, text_color='white', d_scalebar={}):
+def add_scalebar_in_place_stack(img_stack, d_scalebar, draw_text=True, text_color='white'):
     """[Adds a scale bar to a 3D numpy array]
 
     Args:
@@ -161,6 +188,16 @@ def add_scalebar_in_place_stack(img_stack, mag, camera_pixel_width, draw_text=Tr
     Returns:
         img_stack [3D numpy array]: [The image stack with added scale bar]
     """
+    if 'mag' in d_scalebar:
+        mag = d_scalebar['mag']
+        print('mag = ', d_scalebar['mag'])   
+    else:
+        raise ValueError('mag needs to be specified in d_scalebar')
+    if 'camera_pixel_width' in d_scalebar:
+        camera_pixel_width = d_scalebar['camera_pixel_width']
+    else:
+        raise ValueError('camera_pixel_width needs to be specified in d_scalebar')
+
     if img_stack.dtype != np.uint8:
         print(f'Wrong datatype of the input image stack ({img_stack.dtype}), it should be np.uint8, rescaling...')
         img_stack = ff.rescale_from_uint16_to_uint8(img_stack)
@@ -286,8 +323,14 @@ def add_scalebar_in_place(img,
     width_pix = width_um*scale_um_per_pixel
     width_pix = int(width_pix) #Round to an integer
 
-    img_h = img.shape[0]
-    img_w = img.shape[1]
+    if len(img.shape) == 2:
+        img_h = img.shape[0]
+        img_w = img.shape[1]
+    else: #color, RGB
+        img_h = img.shape[1]
+        img_w = img.shape[2]
+
+  
     if position == 'lower_right_corner':
         # print(f'\tScale bar position: lower right corner, mag = {mag_nbr},  pad = {pad}')
         x1 = -pad_x-width_pix
@@ -312,15 +355,18 @@ def add_scalebar_in_place(img,
         # print(f'Drawing scale bar, x:{x1}-{x2},y: {y1}-{y2}')
         # print(f'mag:{mag}, img_w: {img_w}, img_h:{img_h}\npad_x: {pad_x}, pad_y: {pad_y}\nheight:{height}, width:{width_pix}')
         img[y1:y2, x1:x2] = text_pixel_value
-    elif len(img.shape) == 3: #2d images grayscale    
+    elif len(img.shape) == 3: #color images
         # Draw scale bar
-        img[y1:y2, x1:x2,:] = text_pixel_value
-    else: #3D images grayscale
-         raise ValueError(f'Incorrect shape of image. it should be 2D and not  {len(im.shape)}D')
+        img[:,y1:y2, x1:x2] = text_pixel_value
+    else:
+         raise ValueError(f'Wrong input of image shape ({len(img.shape)}), it should be either 2 or 3')
 
     if draw_text:
         # Draw the text using PIL
-        pil_img = Image.fromarray(img)
+        if len(img.shape) == 2: #2d images grayscale
+            pil_img = Image.fromarray(img)
+        elif len(img.shape) == 3: #color
+            pil_img = Image.fromarray(img.transpose(1,2,0), mode="RGB")
         drawer = ImageDraw.Draw(pil_img)
         font = get_font_sanspro_regular(font_size=font_size) #Get the good-looking font Sanspro regular. This font has to be downloaded separately and the directory of the font specified.
         # font = ImageFont.truetype("DejaVuSans.ttf", font_size)
@@ -334,6 +380,9 @@ def add_scalebar_in_place(img,
             font=font, align='center', anchor='ms',
         )                
         np_img = np.array(pil_img, dtype=np.uint8) #Convert to an unsigned 8-bit integer numpy array
+        if len(img.shape) == 3: #color
+            np_img = np_img.transpose(2,0,1)
+        
         return np_img
     else:
         return img
@@ -350,12 +399,12 @@ def add_scalebar(axis, len_in_pixels, label=None, position='upper right',
         **kwargs
     ))
 
-def add_pressure_vector_to_stack(img_stack,dic_p, text_y_pos=30):
+def add_pressure_vector_to_stack(img_stack,d_pressure):
     """[Add a label of the pressure difference in mbar to the image stack]
 
     Args:
         img_stack ([3D numpy array]): [Image stack]
-        dic_p ([dictionary]): [A dictionary containing a verctor of the pressure values ('p') and a vector containing the time in frames]
+        d_pressure ([dictionary]): [A dictionary containing a verctor of the pressure values ('p') and a vector containing the time in frames]
         text_y_pos (int, optional): [Text position in y-direction]. Defaults to 30.
 
     Raises:
@@ -364,15 +413,37 @@ def add_pressure_vector_to_stack(img_stack,dic_p, text_y_pos=30):
     Returns:
         img_stack [3D numpy array]: [The image stack with added pressure values]
     """
-    if not dic_p:
+    if not d_pressure:
         raise ValueError('The dictionary containing the pressure and time vectors is empty.')
-    p_vector = dic_p['p'] #pressure vector
-    t_frames = dic_p['t_pix'] #time vector
+    p_vector = d_pressure['p'] #pressure vector
+    t_frames = d_pressure['t_pix'] #time vector
+
+    if 'text_y_pos' in d_pressure:
+        text_y_pos = d_pressure['text_y_pos']
+    else:
+        text_y_pos = 30
+        # h = img_stack.shape[1] #Height of the image
+        # text_y_pos = h-pad #position of the text in the y-direction
+
+    if 'text_x_pos' in d_pressure:
+        text_x_pos = d_pressure['text_x_pos']
+    else:
+        text_x_pos = 20
+
+    if 'font_size' in d_pressure:
+        font_size = d_pressure['font_size']
+    else:
+        font_size = 19
+
 
     #Iterate every frame of the image-stack and add the pressure label
     for i in range(0,len(img_stack)):
         inx = fun_misc.find_nearest(t_frames,i)
         p = p_vector[inx]
         txt = f'{int(p)} mbar'
-        img_stack[i] = add_text(img_stack[i], txt, text_y_pos=text_y_pos)
+        img_stack[i] = add_text(img_stack[i], 
+                                txt, 
+                                text_y_pos=text_y_pos,
+                                text_x_pos=text_x_pos,
+                                font_size=font_size)
     return img_stack
