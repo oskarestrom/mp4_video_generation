@@ -1,3 +1,4 @@
+include utils/SourceSansPro-Regular.ttf
 global-exclude *.gif
 exclude videos/output.gif
 exclude videos/output_color.gif
