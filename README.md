@@ -96,6 +96,15 @@ To give the viewer a sense of the passing time of the contents of the video, you
     }, #dictionary of timestamp to add to the video
     'nbr_of_decimals_for_timestamp':1, #number of decimals for the timestamp
 ```
+
+### Modifying the text
+Depending on what options you set, there will be various texts in the video. Make sure to set a text color which leads to great contrast, i.e. black text on a bright background or white text on a darker background. As the dimensions (x and y) of the videos might differ, you might have to change the font size accordingly so that it is easy to read the text. Also, if the text is positioned at a bad location, change the x coordinated using 'text_x_pos':
+```python
+    'text_color':'white', #color of the text
+    'font_size':19, #font size of the text
+    'text_x_pos':80, #x position of the text
+```
+
 ### Modifying the playback rate
 You might have recorded your videos at a high frame rate. However, you want to play the video much slower than real-time. Then you could adjust the playback rate:
 ```python
@@ -106,14 +115,6 @@ Make sure to also set the correct frame rate that the video was recorded with. I
 
 <img src="videos/output_playbackrate.gif" width="150">
 Notice that the video is slowed down by decreasing the playback_rate from 30.8 to 10 fps.
-
-### Modifying the text
-Depending on what options you set, there will be various texts in the video. Make sure to set a text color which leads to great contrast, i.e. black text on a bright background or white text on a darker background. As the dimensions (x and y) of the videos might differ, you might have to change the font size accordingly so that it is easy to read the text. Also, if the text is positioned at a bad location, change the x coordinated using 'text_x_pos':
-```python
-    'text_color':'white', #color of the text
-    'font_size':19, #font size of the text
-    'text_x_pos':80, #x position of the text
-```
 
 ### Adding a title
 Sometimes, it can be great to add a title or other text to highlight features in the video. It can also be useful to add a background box (e.g. in black) to surround the title so it becomes more visible.
@@ -171,13 +172,13 @@ Because the default brightness and contrast settings might be sub-optimal, you c
     # Contrast settings
     'enhance_contrast':True, #enhance contrast of the video
     'd_contrast':{ #dictionary of contrast settings. Choose basing the contrast settings between percentiles and pixel values
-        'set_contrast_based_on_percentiles':True, #set contrast based on percentiles
-        'p':np.array([5,95]), #percentiles used to set the contrast
-        'set_contrast_based_on_pixel_values':False, #set contrast based on pixel values
-        'lims':np.array([40,200]), #pixel values used to set the contrast
+        #'set_contrast_based_on_percentiles':True, #set contrast based on percentiles
+        #'p':np.array([5,95]), #percentiles used to set the contrast
+        'set_contrast_based_on_pixel_values':True, #set contrast based on pixel values
+        'lims':np.array([190,255]), #pixel values used to set the contrast
     }, #dictionary of contrast settings
 ```
-
+<img src="videos/output_contrast.gif" width="150">
 ### RGB (color) video
 This script will also work with color videos (8-bit RGB).
 <img src="videos/output_color.gif" width="150">

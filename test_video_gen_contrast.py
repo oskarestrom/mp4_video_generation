@@ -24,9 +24,9 @@ img = ff.crop_image(img, crop_imageJ)
 
 settings = {
     # Basic settings
-    'file_path_save' : os.path.join(base_path,'output_playbackrate.mp4'), #path to save the video
+    'file_path_save' : os.path.join(base_path,'output_contrast.mp4'), #path to save the video
     'frame_rate': 30.8, #frame rate of the video
-    'playback_rate':90, #playback rate of the video. If set to -1, the playback rate will be the same as the frame rate 
+    'playback_rate':15, #playback rate of the video. If set to -1, the playback rate will be the same as the frame rate 
     'frame_range':frame_range, #frame range for the video, if set to [0,0], all available frames will be used
     # Video Quality
     'crf':20, #crf used to save the video
@@ -34,6 +34,10 @@ settings = {
 
     # Contrast settings
     'enhance_contrast':True, #enhance contrast of the video
+    'd_contrast':{ #dictionary of contrast settings. Choose basing the contrast settings between percentiles and pixel values
+        'set_contrast_based_on_pixel_values':True, #set contrast based on pixel values
+        'lims':np.array([190,255]), #pixel values used to set the contrast
+    }, #dictionary of contrast settings
 
     # General text settings
     'text_color':'white', #color of the text
@@ -51,6 +55,7 @@ settings = {
         'text_y_pos':10, #y position of the timestamp
         'text_x_pos':10, #y position of the timestamp
     }, #dictionary of timestamp to add to the video
+
 
 }
 vid.save_as_mp4(img, settings)
