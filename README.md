@@ -47,13 +47,15 @@ settings = {
     'text_color':'white', #color of the text
 
     #Scale bar
-    'add_scale_bar':True, #add scale bar to the video
-    'mag':'100x', #magnification of the microscope used to acquire the video
-    'camera_pixel_width':16, #camera pixel width in microns
+    'd_scalebar':{ #dictionary of scale bar to add to the video
+        'mag':'100x', #magnification of the microscope used to acquire the video
+        'camera_pixel_width':16, #camera pixel width in microns
+    }, 
 
     #Timestamp
-    'add_timestamp':True, #add timestamp to the video
-    'nbr_of_decimals_for_timestamp':1, #number of decimals for the timestamp
+    'd_timestamp':{
+        'nbr_of_decimals_for_timestamp':1, #number of decimals for the timestamp
+    }
 
 }
 vid.save_as_mp4(img, settings)
@@ -69,10 +71,9 @@ settings = {}
 ```
 
 ### Adding a scale bar
-It is fully possible and recommendable to add a scale bar to your video. Set 'add_scale_bar' to True. It is important to specify the magnification the video was acquired with as well as the camera pixel width. Without these, the scale will be incorrect. To customize the padding of the scale bar to the video border, to the text, the fontsize of the text, specify this in the dictionary 'd_scalebar' as shown below:
+It is fully possible and recommendable to add a scale bar to your video. It is important to specify the magnification the video was acquired with as well as the camera pixel width. Without these, the scale will be incorrect. To customize the padding of the scale bar to the video border, to the text, the fontsize of the text, specify this in the dictionary 'd_scalebar' as shown below:
 ```python
     #Scale bar
-    'add_scale_bar':True, #add scale bar to the video
     'd_scalebar':{ #dictionary of scale bar to add to the video
         'pad_y':0, #y padding of the scale bar to the image border
         'pad_x':0, #x padding of the scale bar to the image border
@@ -80,21 +81,21 @@ It is fully possible and recommendable to add a scale bar to your video. Set 'ad
         'width_factor':1, #width of the scale bar in pixels
         'fontsize':19, #font size of the scale bar
         'pad_text':0, #padding of the text to the scale bar
+        'mag':'100x', #magnification of the microscope used to acquire the video
+        'camera_pixel_width':16, #camera pixel width in microns
     }, 
-    'mag':'100x', #magnification of the microscope used to acquire the video
-    'camera_pixel_width':16, #camera pixel width in microns
+
 ```
 ### Adding a timestamp
 To give the viewer a sense of the passing time of the contents of the video, you can add a timestamp. By default, this timestamp is placed in the upper left corner of the video. If the video is in slow-motion, make sure to increase the number of decimals with the setting 'nbr_of_decimals_for_timestamp'.
 ```python
     #Timestamp
-    'add_timestamp':True, #add timestamp to the video
-    'd_timestamp':{
+    'd_timestamp':{ #dictionary of timestamp to add to the video
         'pad_timestamp_y':10, #y padding of the timestamp to the image border
         'font_size':19, #font size of the timestamp
         'text_y_pos':0, #y position of the timestamp
-    }, #dictionary of timestamp to add to the video
     'nbr_of_decimals_for_timestamp':1, #number of decimals for the timestamp
+    }, 
 ```
  
 ### Modifying the text
