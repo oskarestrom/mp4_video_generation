@@ -60,7 +60,7 @@ vid.save_as_mp4(img, settings)
 ```
 
 ### Output video:
-<img src="videos/output.gif" width="100">
+<img src="videos/output.gif" width="150">
 
 ## Extensive settings list
 It is possible to modify the output movie in numerable ways. The settings dictionary below show all the possible options. See below for comments on each option.
