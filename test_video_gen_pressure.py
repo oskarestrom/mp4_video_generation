@@ -26,7 +26,7 @@ settings = {
     # Basic settings
     'file_path_save' : os.path.join(base_path,'output_pressure.mp4'), #path to save the video
     'frame_rate': 30.8, #frame rate of the video
-    'playback_rate':5, #playback rate of the video. If set to -1, the playback rate will be the same as the frame rate 
+    'playback_rate':15, #playback rate of the video. If set to -1, the playback rate will be the same as the frame rate 
     'frame_range':frame_range, #frame range for the video, if set to [0,0], all available frames will be used
     # Video Quality
     'crf':20, #crf used to save the video
@@ -48,7 +48,7 @@ settings = {
         'nbr_of_decimals_for_timestamp':1, #number of decimals for the timestamp
         'pad_timestamp_y':10, #y padding of the timestamp to the image border
         'font_size':19, #font size of the timestamp
-        'text_y_pos':40, #y position of the timestamp
+        'text_y_pos':10, #y position of the timestamp
         'text_x_pos':10, #y position of the timestamp
     }, #dictionary of timestamp to add to the video
 
@@ -57,7 +57,7 @@ settings = {
         'p':np.arange(0,img.shape[0])*10, #pressure vector
         't_pix':np.arange(0,img.shape[0]), #time vector
         'text_x_pos':10, #x position of the text
-        'text_y_pos':65, #y position of the text
+        'text_y_pos':35, #y position of the text
         'font_size':19, #font size of the text
     }, 
 

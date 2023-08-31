@@ -34,7 +34,7 @@ settings = {
     # Basic settings
     'file_path_save' : 'example_video\DNA_moving_output.mp4', #path to save the video
     'frame_rate': 30.82, #frame rate of the video [frames per second]
-    'playback_rate':3, #playback rate of the video [frames per second]. If set to -1, the playback rate will be the same as the frame rate 
+    'playback_rate':30.82, #playback rate of the video [frames per second]. If set to -1, the playback rate will be the same as the frame rate 
     'frame_range':frame_range, #frame range for the video, if set to [0,0], all available frames will be used
     # Video Quality
     'crf':10, #crf used to save the video
@@ -68,25 +68,6 @@ It is possible to modify the output movie in numerable ways. The settings dictio
 settings = {}
 ```
 
-### Modifying the playback rate
-You might have recorded your videos at a high frame rate. However, you want to play the video much slower than real-time. Then you could adjust the playback rate:
-```python
-    'frame_rate': 30.82, #frame rate of the video
-    'playback_rate':5, #playback rate of the video. If set to -1, the playback rate will be the same as the frame rate 
-```
-Make sure to also set the correct frame rate that the video was recorded with. It is stored in the metadata of the video.
-
-<img src="videos/output_playbackrate.gif" width="150">
-Notice that the video is slowed down by increasing the playback_rate from 30.8 to 90 fps.
-
-### Modifying the text
-Depending on what options you set, there will be various texts in the video. Make sure to set a text color which leads to great contrast, i.e. black text on a bright background or white text on a darker background. As the dimensions (x and y) of the videos might differ, you might have to change the font size accordingly so that it is easy to read the text. Also, if the text is positioned at a bad location, change the x coordinated using 'text_x_pos':
-```python
-    'text_color':'white', #color of the text
-    'font_size':19, #font size of the text
-    'text_x_pos':80, #x position of the text
-```
-
 ### Adding a scale bar
 It is fully possible and recommendable to add a scale bar to your video. Set 'add_scale_bar' to True. It is important to specify the magnification the video was acquired with as well as the camera pixel width. Without these, the scale will be incorrect. To customize the padding of the scale bar to the video border, to the text, the fontsize of the text, specify this in the dictionary 'd_scalebar' as shown below:
 ```python
@@ -115,6 +96,25 @@ To give the viewer a sense of the passing time of the contents of the video, you
     }, #dictionary of timestamp to add to the video
     'nbr_of_decimals_for_timestamp':1, #number of decimals for the timestamp
 ```
+### Modifying the playback rate
+You might have recorded your videos at a high frame rate. However, you want to play the video much slower than real-time. Then you could adjust the playback rate:
+```python
+    'frame_rate': 30.82, #frame rate of the video
+    'playback_rate':10, #playback rate of the video. If set to -1, the playback rate will be the same as the frame rate 
+```
+Make sure to also set the correct frame rate that the video was recorded with. It is stored in the metadata of the video.
+
+<img src="videos/output_playbackrate.gif" width="150">
+Notice that the video is slowed down by decreasing the playback_rate from 30.8 to 10 fps.
+
+### Modifying the text
+Depending on what options you set, there will be various texts in the video. Make sure to set a text color which leads to great contrast, i.e. black text on a bright background or white text on a darker background. As the dimensions (x and y) of the videos might differ, you might have to change the font size accordingly so that it is easy to read the text. Also, if the text is positioned at a bad location, change the x coordinated using 'text_x_pos':
+```python
+    'text_color':'white', #color of the text
+    'font_size':19, #font size of the text
+    'text_x_pos':80, #x position of the text
+```
+
 ### Adding a title
 Sometimes, it can be great to add a title or other text to highlight features in the video. It can also be useful to add a background box (e.g. in black) to surround the title so it becomes more visible.
 ```python
@@ -179,11 +179,7 @@ Because the default brightness and contrast settings might be sub-optimal, you c
 ```
 
 ### RGB (color) video
-It is possible to use this script for color videos. Just set the 'RGB_video' to True.
-```python
-    # Video settings
-    'RGB_video':False, #is the video in color or not?
-```
+This script will also work with color videos (8-bit RGB).
 <img src="videos/output_color.gif" width="150">
 
 ### Enlarging the video (if small)
