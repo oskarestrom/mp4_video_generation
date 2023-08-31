@@ -13,7 +13,10 @@ You need to install the following libraries to run this package:
 - pip install tifffile > 2021.7.2
 ```
 ### Install this package
-
+Find this package on [test.pypi.org](https://test.pypi.org/project/mp4-video-generation)
+```shell
+pip install -i https://test.pypi.org/simple/ mp4-video-generation==0.0.1
+```
 ## Generation of a mp4 movie
 
 ### Input (raw) video:
