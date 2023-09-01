@@ -17,6 +17,10 @@ Find this package on [test.pypi.org](https://test.pypi.org/project/mp4-video-gen
 ```shell
 pip install -i https://test.pypi.org/simple/ mp4-video-generation
 ```
+
+### Cite this work
+In a short amount of time, this work will have a Digital Object Identifier (DOI) through Zenedo that you can cite.
+
 ## Generation of a mp4 movie
 
 ### Input (raw) video:
